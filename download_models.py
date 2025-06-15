@@ -26,7 +26,7 @@ def load_config():
 def check_hf_token():
     """检查Hugging Face token"""
     token = os.environ.get('HF_TOKEN')
-    token = "your hf token"
+   
     if not token:
         print("⚠ 未设置Hugging Face token")
         print("FLUX.1 DEV模型需要申请访问权限:")
