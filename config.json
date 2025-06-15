@@ -1,0 +1,47 @@
+{
+    "api": {
+        "host": "127.0.0.1",
+        "port": 5000,
+        "debug": false
+    },
+    "comfyui": {
+        "host": "127.0.0.1",
+        "port": 8188,
+        "install_dir": "./ComfyUI",
+        "models_dir": "./models"
+    },
+    "flux": {
+        "model_name": "FLUX.1-dev",
+        "default_width": 1024,
+        "default_height": 1024,
+        "default_steps": 20,
+        "default_guidance_scale": 3.5,
+        "max_width": 2048,
+        "max_height": 2048,
+        "max_steps": 50
+    },
+    "models": {
+        "flux_dev": {
+            "url": "https://huggingface.co/black-forest-labs/FLUX.1-dev",
+            "local_path": "models/checkpoints/flux1-dev.safetensors",
+            "filename": "flux1-dev.safetensors"
+        },
+        "vae": {
+            "url": "https://huggingface.co/black-forest-labs/FLUX.1-dev",
+            "local_path": "models/vae/ae.safetensors",
+            "filename": "ae.safetensors"
+        },
+        "clip": {
+            "url": "https://huggingface.co/comfyanonymous/flux_text_encoders",
+            "local_path": "models/clip",
+            "files": [
+                "clip_l.safetensors",
+                "t5xxl_fp16.safetensors"
+            ]
+        }
+    },
+    "logging": {
+        "level": "INFO",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    }
+} 
