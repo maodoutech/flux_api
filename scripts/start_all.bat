@@ -19,10 +19,22 @@ if errorlevel 1 (
 echo ✓ Python环境正常
 echo.
 
-echo 检查依赖包...
+echo 检查PyTorch...
+python -c "import torch" >nul 2>&1
+if errorlevel 1 (
+    echo 正在安装PyTorch...
+    call scripts/install_pytorch.bat
+    if errorlevel 1 (
+        echo ❌ PyTorch安装失败
+        pause
+        exit /b 1
+    )
+)
+
+echo 检查其他依赖包...
 python -c "import flask, requests, pillow" >nul 2>&1
 if errorlevel 1 (
-    echo 正在安装依赖包...
+    echo 正在安装其他依赖包...
     pip install -r requirements.txt
     if errorlevel 1 (
         echo ❌ 依赖包安装失败

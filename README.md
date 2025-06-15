@@ -76,27 +76,47 @@ text2img/
 
 ### 手动启动
 
-1. **安装Python依赖**
+1. **安装PyTorch (重要!)**
+   
+   **自动安装 (推荐):**
+   ```bash
+   scripts/install_pytorch.bat
+   ```
+   脚本会自动检测您的GPU并安装合适的PyTorch版本。
+
+   **手动安装:**
+   
+   如果您有NVIDIA GPU:
+   ```bash
+   pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128
+   ```
+   
+   如果没有GPU (仅CPU):
+   ```bash
+   pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+   ```
+
+2. **安装其他Python依赖**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **安装ComfyUI**
+3. **安装ComfyUI**
    ```bash
    python scripts/install_comfyui.py
    ```
 
-3. **下载模型文件**
+4. **下载模型文件**
    ```bash
    python scripts/download_models.py
    ```
 
-4. **启动ComfyUI后端**
+5. **启动ComfyUI后端**
    ```bash
    python scripts/start_comfyui.py
    ```
 
-5. **启动API服务器**
+6. **启动API服务器**
    ```bash
    python run_api.py
    ```
@@ -158,9 +178,10 @@ python tests/test_api.py
 python examples/api_example.py
 ```
 
-## 📚 API文档
+## 📚 文档
 
-详细的API接口文档请查看: [docs/API.md](docs/API.md)
+- **API接口文档**: [docs/API.md](docs/API.md)
+- **PyTorch安装指南**: [docs/PYTORCH_INSTALL.md](docs/PYTORCH_INSTALL.md)
 
 ## ⚙️ 配置说明
 
@@ -199,7 +220,27 @@ python examples/api_example.py
 
 ### 常见问题
 
-1. **Python环境问题**
+1. **PyTorch安装问题**
+   ```bash
+   # 检查PyTorch是否正确安装
+   python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"
+   
+   # 如果安装了错误版本，先卸载再重新安装
+   pip uninstall torch torchvision torchaudio
+   scripts/install_pytorch.bat
+   ```
+
+2. **NVIDIA用户PyTorch问题**
+   如果出现 "Torch not compiled with CUDA enabled" 错误:
+   ```bash
+   # 卸载现有的PyTorch
+   pip uninstall torch torchvision torchaudio
+   
+       # 安装CUDA版本
+    pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128
+   ```
+
+3. **Python环境问题**
    ```bash
    # 检查Python版本
    python --version
@@ -208,13 +249,13 @@ python examples/api_example.py
    pip install -r requirements.txt --force-reinstall
    ```
 
-2. **ComfyUI启动失败**
+4. **ComfyUI启动失败**
    ```bash
    # 手动启动ComfyUI检查错误
    python scripts/start_comfyui.py
    ```
 
-3. **模型下载失败**
+5. **模型下载失败**
    ```bash
    # 重新下载模型
    python scripts/download_models.py --force

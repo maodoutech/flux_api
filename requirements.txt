@@ -1,6 +1,7 @@
-torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
+# PyTorch 将根据系统环境在安装脚本中自动安装
+# torch>=2.0.0  # 由安装脚本处理
+# torchvision>=0.15.0  # 由安装脚本处理  
+# torchaudio>=2.0.0  # 由安装脚本处理
 flask>=2.3.0
 flask-cors>=4.0.0
 requests>=2.31.0
