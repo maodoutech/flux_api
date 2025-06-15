@@ -1,197 +1,250 @@
 # FLUX.1 DEV 文生图 API 服务
 
-本项目基于Windows环境部署FLUX.1 DEV模型，提供文生图API服务。
+基于 FLUX.1 DEV 模型的高质量文生图 API 服务，支持生成与 ComfyUI Web 界面相同质量的清晰图片。
 
-## 🚀 一键启动
+## ✨ 特性
 
-如果你只想快速体验，直接双击运行 `start_all.bat` 文件即可！
+- 🎨 **高质量生成**: 使用优化的工作流，生成清晰细腻的图片
+- 🚀 **快速部署**: 一键安装和启动，无需复杂配置
+- 🔧 **灵活配置**: 支持多种参数调节，满足不同需求
+- 📱 **简单易用**: RESTful API接口，易于集成
+- 🎯 **专业优化**: 针对FLUX模型的专用配置（CFG=1.0，双重编码器）
 
-## 📋 系统要求
+## 📁 项目结构
 
-- ✅ Windows 10/11 64位系统
-- ✅ NVIDIA显卡（建议12GB+ VRAM）
-- ✅ Python 3.8-3.11
-- ✅ Git
-- ✅ 至少30GB可用硬盘空间
-- ✅ 稳定的网络连接
-
-## 🏗 部署方案
-
-本项目采用ComfyUI作为后端引擎，通过Flask提供REST API接口：
-
-1. **ComfyUI**: 作为FLUX模型的推理引擎
-2. **Flask API**: 提供HTTP接口服务
-3. **模型管理**: 自动下载和管理FLUX.1 DEV模型
-
-## 🛠 安装与部署
-
-### 方法一：自动安装（推荐）
-
-直接运行批处理文件：
-```bash
-start_all.bat
+```
+text2img/
+├── README.md              # 项目说明
+├── CHANGELOG.md           # 更新日志
+├── requirements.txt       # Python依赖包
+├── run_api.py            # API服务启动脚本
+├── .gitignore            # Git忽略文件
+├── src/                  # 核心源代码
+│   ├── __init__.py
+│   ├── api_server.py     # Flask API服务器
+│   └── comfyui_manager.py # ComfyUI管理器
+├── config/               # 配置文件
+│   ├── config.json       # 系统配置
+│   └── workflows/        # ComfyUI工作流
+│       └── flux_workflow.json
+├── scripts/              # 安装和启动脚本
+│   ├── install_comfyui.py    # ComfyUI安装脚本
+│   ├── start_comfyui.py      # ComfyUI启动脚本
+│   ├── download_models.py    # 模型下载脚本
+│   ├── start_all.bat         # 一键启动脚本(Windows)
+│   └── install_dependencies.bat # 依赖安装脚本
+├── tests/                # 测试文件
+│   └── test_api.py       # API测试脚本
+├── examples/             # 使用示例
+│   └── api_example.py    # Python调用示例
+├── docs/                 # 文档
+│   └── API.md           # API接口文档
+├── models/               # 模型文件目录(自动创建)
+├── output/               # 生成图片目录(自动创建)
+└── ComfyUI/             # ComfyUI安装目录(自动创建)
 ```
 
-### 方法二：手动安装
+## 🚀 快速开始
 
-#### 1. 安装依赖
-```bash
-# 安装Python依赖包
-pip install -r requirements.txt
+### 环境要求
 
-# 安装ComfyUI
-python install_comfyui.py
-```
+- **操作系统**: Windows 10/11
+- **Python**: 3.8-3.11 (推荐 3.10)
+- **显卡**: NVIDIA GPU (显存 12GB+推荐)
+- **硬盘**: 至少 30GB 可用空间
 
-#### 2. 获取Hugging Face Token
+### 一键启动 (推荐)
 
-1. 访问 [FLUX.1-dev模型页面](https://huggingface.co/black-forest-labs/FLUX.1-dev)
-2. 点击 "Request access" 申请访问权限
-3. 获取你的token: https://huggingface.co/settings/tokens
-4. 设置环境变量：
+1. **下载项目**
    ```bash
-   set HF_TOKEN=你的token
+   git clone https://github.com/your-repo/text2img.git
+   cd text2img
    ```
 
-#### 3. 下载模型
+2. **运行启动脚本**
+   ```bash
+   scripts/start_all.bat
+   ```
+
+   脚本会自动完成：
+   - ✅ 检查Python环境
+   - ✅ 安装Python依赖包
+   - ✅ 下载安装ComfyUI
+   - ✅ 下载FLUX模型文件
+   - ✅ 启动ComfyUI后端服务
+   - ✅ 启动API服务器
+
+### 手动启动
+
+1. **安装Python依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **安装ComfyUI**
+   ```bash
+   python scripts/install_comfyui.py
+   ```
+
+3. **下载模型文件**
+   ```bash
+   python scripts/download_models.py
+   ```
+
+4. **启动ComfyUI后端**
+   ```bash
+   python scripts/start_comfyui.py
+   ```
+
+5. **启动API服务器**
+   ```bash
+   python run_api.py
+   ```
+
+## 🎯 使用方法
+
+### API接口
+
+服务启动后，API服务器运行在 `http://127.0.0.1:5000`
+
+#### 生成图片
+
 ```bash
-# 自动下载FLUX.1 DEV模型和相关文件
-python download_models.py
+curl -X POST http://127.0.0.1:5000/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "a beautiful landscape with mountains and lake",
+    "width": 1024,
+    "height": 1024,
+    "steps": 20
+  }'
 ```
 
-#### 4. 启动服务
-```bash
-# 启动ComfyUI后端（保持运行）
-python start_comfyui.py
+#### 查看状态
 
-# 新开终端窗口，启动API服务
-python api_server.py
+```bash
+curl http://127.0.0.1:5000/status
 ```
 
-## 🧪 测试API
+### Python调用示例
 
-### 使用测试脚本
-```bash
-# 完整测试
-python test_api.py
+```python
+import requests
 
-# 快速测试
-python quick_test_api.py
+# 生成图片
+response = requests.post('http://127.0.0.1:5000/generate', json={
+    'prompt': 'a cute cat sitting on a wooden table',
+    'width': 1024,
+    'height': 1024,
+    'steps': 20
+})
+
+result = response.json()
+print(f"生成成功! 任务ID: {result['task_id']}")
+
+# 下载图片
+img_response = requests.get(f"http://127.0.0.1:5000/image/{result['task_id']}")
+with open('generated.png', 'wb') as f:
+    f.write(img_response.content)
 ```
 
-### 使用curl测试
+### 测试和示例
+
 ```bash
-curl -X POST http://localhost:5000/generate ^
-  -H "Content-Type: application/json" ^
-  -d "{\"prompt\": \"a beautiful landscape\", \"width\": 1024, \"height\": 1024}"
+# 运行API测试
+python tests/test_api.py
+
+# 运行使用示例  
+python examples/api_example.py
 ```
 
 ## 📚 API文档
 
-### 生成图片
-- **URL**: `POST /generate`
-- **参数**:
-  - `prompt` (必需): 文本描述
-  - `width` (可选): 图片宽度，默认1024
-  - `height` (可选): 图片高度，默认1024
-  - `steps` (可选): 推理步数，默认20
-  - `guidance_scale` (可选): 引导强度，默认3.5
-  - `seed` (可选): 随机种子，默认-1（随机）
+详细的API接口文档请查看: [docs/API.md](docs/API.md)
 
-### 查看状态
-- **URL**: `GET /status`
-- **返回**: 服务状态信息
+## ⚙️ 配置说明
 
-### 获取图片
-- **URL**: `GET /image/{task_id}`
-- **返回**: 生成的图片文件
+### 系统配置 (config/config.json)
 
-### 模型列表
-- **URL**: `GET /models`
-- **返回**: 可用模型列表
-
-### 队列状态
-- **URL**: `GET /queue`
-- **返回**: 当前任务队列状态
-
-## 📁 目录结构
-
-```
-text2img/
-├── api_server.py          # Flask API服务器
-├── comfyui_manager.py     # ComfyUI管理器
-├── download_models.py     # 模型下载脚本
-├── install_comfyui.py     # ComfyUI安装脚本
-├── start_comfyui.py       # ComfyUI启动脚本
-├── start_all.bat          # 一键启动脚本
-├── test_api.py           # API测试脚本
-├── quick_test_api.py     # 快速测试脚本
-├── simple_api_test.py    # 简单测试脚本
-├── requirements.txt       # Python依赖
-├── config.json           # 配置文件
-├── workflows/            # ComfyUI工作流
-│   └── flux_workflow.json
-├── models/              # 模型存储目录
-│   ├── checkpoints/
-│   ├── vae/
-│   └── clip/
-├── output/              # 生成图片输出目录
-└── logs/                # 日志文件目录
+```json
+{
+  "comfyui": {
+    "host": "127.0.0.1",
+    "port": 8188,
+    "startup_timeout": 120
+  },
+  "api": {
+    "host": "127.0.0.1", 
+    "port": 5000,
+    "debug": false
+  },
+  "generation": {
+    "default_steps": 20,
+    "max_steps": 50,
+    "default_cfg": 1.0,
+    "max_width": 2048,
+    "max_height": 2048
+  }
+}
 ```
 
-## ❓ 常见问题
+### 工作流配置 (config/workflows/flux_workflow.json)
 
-### Q: 显存不足怎么办？
-A: 在配置文件中调整参数，或使用CPU模式（速度会很慢）
+项目使用优化的FLUX工作流，包含：
+- CLIPTextEncodeFlux节点（高质量编码）
+- 双重编码器架构（CLIP-L + T5）
+- 专用参数配置（CFG=1.0）
 
-### Q: 模型下载失败？
-A: 检查网络连接和HF_TOKEN设置，可以尝试使用代理
+## 🔧 故障排除
 
-### Q: ComfyUI启动失败？
-A: 检查Python版本和依赖安装，确保CUDA驱动正确
+### 常见问题
 
-### Q: 生成速度很慢？
-A: 确保使用GPU，并检查显卡驱动。可以降低steps和分辨率加快速度
+1. **Python环境问题**
+   ```bash
+   # 检查Python版本
+   python --version
+   
+   # 重新安装依赖
+   pip install -r requirements.txt --force-reinstall
+   ```
 
-### Q: API测试失败？
-A: 确保ComfyUI服务正在运行，检查端口是否被占用
+2. **ComfyUI启动失败**
+   ```bash
+   # 手动启动ComfyUI检查错误
+   python scripts/start_comfyui.py
+   ```
 
-## 🔧 高级配置
+3. **模型下载失败**
+   ```bash
+   # 重新下载模型
+   python scripts/download_models.py --force
+   ```
 
-编辑 `config.json` 文件可以调整：
-- API服务器端口和主机
-- ComfyUI服务配置
-- FLUX模型参数
-- 最大分辨率和步数限制
-- 日志级别和格式
+4. **显存不足**
+   - 降低图片分辨率 (如512x512)
+   - 减少推理步数 (如10-15步)
+   - 关闭其他占用显存的程序
 
-## 💡 使用技巧
+### 性能优化
 
-1. **优化提示词**: 使用详细、具体的描述
-2. **调整参数**: 
-   - 高质量: steps=30, guidance_scale=4.0
-   - 快速生成: steps=15, guidance_scale=3.0
-3. **批量生成**: 使用不同的seed值
-4. **监控GPU**: 使用`nvidia-smi`查看显存使用情况
-5. **提示词长度**: 建议控制在200字符以内，避免Token长度错误
+- **显存12GB+**: 可以生成1024x1024及以上分辨率
+- **显存8GB**: 建议使用512x512分辨率
+- **CPU模式**: 修改config.json启用CPU模式（速度较慢）
 
-## 🆘 故障排除
+## 📋 更新日志
 
-1. **检查服务状态**: http://localhost:5000/status
-2. **查看日志**: 观察终端输出和logs目录下的日志文件
-3. **重启服务**: 关闭所有窗口重新启动
-4. **清理缓存**: 删除output目录重新开始
-5. **检查端口**: 确保8188(ComfyUI)和5000(API)端口未被占用
-6. **验证模型**: 确认模型文件下载完整
+详细更新记录请查看: [CHANGELOG.md](CHANGELOG.md)
 
-## 📝 注意事项
+## 🤝 贡献
 
-1. 首次启动会自动下载约15GB的模型文件
-2. 确保网络连接稳定，模型下载可能需要较长时间
-3. 生成图片需要较高的显存，建议使用12GB+显存的显卡
-4. 提示词过长可能导致Token长度错误，系统会自动截断
-5. 如遇到问题，请查看日志文件或查阅故障排除部分
+欢迎提交Issue和Pull Request来改进项目！
 
----
+## 📄 许可证
 
-🎉 现在你可以享受FLUX.1 DEV的强大文生图能力了！ 
+本项目基于MIT许可证开源，详见LICENSE文件。
+
+## 🙏 致谢
+
+- [ComfyUI](https://github.com/comfyanonymous/ComfyUI) - 强大的Stable Diffusion UI
+- [FLUX.1](https://huggingface.co/black-forest-labs/FLUX.1-dev) - 高质量文生图模型
+- 感谢所有贡献者和用户的支持！ 

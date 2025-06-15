@@ -1,12 +1,1 @@
-2025-06-15 22:18:24,002 - __main__ - INFO - 配置文件加载成功
-2025-06-15 22:18:24,002 - __main__ - INFO - 正在启动ComfyUI服务...
-2025-06-15 22:18:24,002 - __main__ - INFO - 安装目录: ./ComfyUI
-2025-06-15 22:18:24,002 - __main__ - INFO - 监听地址: 127.0.0.1:8188
-2025-06-15 22:18:27,778 - __main__ - INFO - 检测到GPU: NVIDIA GeForce RTX 4090 Laptop GPU, 显存: 16.0GB
-2025-06-15 22:18:27,778 - __main__ - INFO - 使用高性能GPU模式（12GB+显存）
-2025-06-15 22:18:27,778 - __main__ - INFO - 启动命令: C:\Users\Administrator\AppData\Local\Programs\Python\Python311\python.exe main.py --listen 127.0.0.1 --port 8188 --enable-cors-header
-2025-06-15 22:18:27,778 - __main__ - INFO - ComfyUI进程已启动，PID: 9704
-2025-06-15 22:18:34,840 - __main__ - INFO - ComfyUI服务启动成功!
-2025-06-15 22:18:34,840 - __main__ - INFO - 开始监控ComfyUI进程状态...
-2025-06-15 22:19:03,602 - __main__ - ERROR - ComfyUI输出异常信息: Token indices sequence length is longer than the specified maximum sequence length for this model (91 > 77). Running this sequence through the model will result in indexing errors
-2025-06-15 23:03:06,902 - __main__ - ERROR - ComfyUI输出异常信息: Token indices sequence length is longer than the specified maximum sequence length for this model (91 > 77). Running this sequence through the model will result in indexing errors
+ 

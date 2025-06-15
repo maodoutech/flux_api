@@ -34,7 +34,8 @@ class ComfyUIManager:
         
     def _load_workflow_template(self):
         """加载工作流模板"""
-        workflow_path = "workflows/flux_workflow.json"
+        project_root = os.path.dirname(os.path.dirname(__file__))
+        workflow_path = os.path.join(project_root, "config", "workflows", "flux_workflow.json")
         
         if os.path.exists(workflow_path):
             with open(workflow_path, 'r', encoding='utf-8') as f:
@@ -46,52 +47,22 @@ class ComfyUIManager:
     def _create_default_workflow(self):
         """创建默认的FLUX工作流"""
         workflow = {
-            "1": {
-                "inputs": {
-                    "text": "a beautiful landscape",
-                    "clip": ["11", 0]
-                },
-                "class_type": "CLIPTextEncode",
-                "_meta": {
-                    "title": "CLIP Text Encode (Prompt)"
-                }
-            },
-            "2": {
-                "inputs": {
-                    "text": "",
-                    "clip": ["11", 0]
-                },
-                "class_type": "CLIPTextEncode",
-                "_meta": {
-                    "title": "CLIP Text Encode (Negative)"
-                }
-            },
             "3": {
                 "inputs": {
                     "seed": 123456,
                     "steps": 20,
-                    "cfg": 3.5,
+                    "cfg": 1.0,
                     "sampler_name": "euler",
                     "scheduler": "simple",
                     "denoise": 1,
-                    "model": ["12", 0],
-                    "positive": ["1", 0],
-                    "negative": ["2", 0],
+                    "model": ["13", 0],
+                    "positive": ["6", 0],
+                    "negative": ["71", 0],
                     "latent_image": ["5", 0]
                 },
                 "class_type": "KSampler",
                 "_meta": {
                     "title": "KSampler"
-                }
-            },
-            "4": {
-                "inputs": {
-                    "samples": ["3", 0],
-                    "vae": ["10", 0]
-                },
-                "class_type": "VAEDecode",
-                "_meta": {
-                    "title": "VAE Decode"
                 }
             },
             "5": {
@@ -105,10 +76,32 @@ class ComfyUIManager:
                     "title": "Empty Latent Image"
                 }
             },
+            "6": {
+                "inputs": {
+                    "clip_l": "a beautiful landscape",
+                    "t5xxl": "a beautiful landscape",
+                    "guidance": 3.5,
+                    "clip": ["11", 0]
+                },
+                "class_type": "CLIPTextEncodeFlux",
+                "_meta": {
+                    "title": "CLIP Text Encode Flux"
+                }
+            },
+            "8": {
+                "inputs": {
+                    "samples": ["3", 0],
+                    "vae": ["10", 0]
+                },
+                "class_type": "VAEDecode",
+                "_meta": {
+                    "title": "VAE Decode"
+                }
+            },
             "9": {
                 "inputs": {
                     "filename_prefix": "flux_output",
-                    "images": ["4", 0]
+                    "images": ["8", 0]
                 },
                 "class_type": "SaveImage",
                 "_meta": {
@@ -135,7 +128,7 @@ class ComfyUIManager:
                     "title": "DualCLIPLoader"
                 }
             },
-            "12": {
+            "13": {
                 "inputs": {
                     "unet_name": "flux1-dev-fp8.safetensors",
                     "weight_dtype": "default"
@@ -144,12 +137,26 @@ class ComfyUIManager:
                 "_meta": {
                     "title": "Load Diffusion Model"
                 }
+            },
+            "71": {
+                "inputs": {
+                    "clip_l": "",
+                    "t5xxl": "",
+                    "guidance": 3.5,
+                    "clip": ["11", 0]
+                },
+                "class_type": "CLIPTextEncodeFlux",
+                "_meta": {
+                    "title": "CLIP Text Encode Flux Negative"
+                }
             }
         }
         
         # 保存默认工作流
-        os.makedirs("workflows", exist_ok=True)
-        with open("workflows/flux_workflow.json", 'w', encoding='utf-8') as f:
+        workflows_dir = os.path.join(project_root, "config", "workflows")
+        os.makedirs(workflows_dir, exist_ok=True)
+        workflow_file = os.path.join(workflows_dir, "flux_workflow.json")
+        with open(workflow_file, 'w', encoding='utf-8') as f:
             json.dump(workflow, f, indent=2, ensure_ascii=False)
         
         return workflow
@@ -286,18 +293,27 @@ class ComfyUIManager:
             logger.warning(f"提示词过长（{len(prompt)}字符），将截断到{max_prompt_length}字符")
             prompt = prompt[:max_prompt_length]
         
-        # 更新参数 - 根据flux_workflow.json的实际节点ID
-        workflow["1"]["inputs"]["text"] = prompt  # 正面提示词
-        workflow["2"]["inputs"]["text"] = ""      # 负面提示词
+        # 更新参数 - 使用CLIPTextEncodeFlux节点格式
+        workflow["6"]["inputs"]["clip_l"] = prompt  # CLIP-L编码器的提示词
+        workflow["6"]["inputs"]["t5xxl"] = prompt   # T5编码器的提示词
+        workflow["6"]["inputs"]["guidance"] = guidance_scale
+        
+        workflow["71"]["inputs"]["clip_l"] = ""     # 负面提示词（空）
+        workflow["71"]["inputs"]["t5xxl"] = ""      # 负面提示词（空）
+        workflow["71"]["inputs"]["guidance"] = guidance_scale
+        
+        # KSampler参数
         workflow["3"]["inputs"]["seed"] = seed
         workflow["3"]["inputs"]["steps"] = steps
-        workflow["3"]["inputs"]["cfg"] = guidance_scale
+        workflow["3"]["inputs"]["cfg"] = 1.0  # FLUX通常使用CFG=1
+        
+        # 图像尺寸
         workflow["5"]["inputs"]["width"] = width
         workflow["5"]["inputs"]["height"] = height
         
         # 更新输出文件名
         if task_id:
-            workflow["9"]["inputs"]["filename_prefix"] = f"flux_output_{task_id}"
+            workflow["9"]["inputs"]["filename_prefix"] = f"flux_api_{task_id}"
         
         return workflow
     

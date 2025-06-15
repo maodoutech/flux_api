@@ -16,7 +16,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from PIL import Image
 import requests
-from comfyui_manager import ComfyUIManager
+from .comfyui_manager import ComfyUIManager
 
 # 设置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -32,7 +32,8 @@ comfyui_manager = None
 def load_config():
     """加载配置文件"""
     global config
-    with open('config.json', 'r', encoding='utf-8') as f:
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', 'config.json')
+    with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
     return config
 

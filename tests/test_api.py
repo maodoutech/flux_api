@@ -5,10 +5,17 @@ API测试脚本
 用于测试FLUX.1 DEV API服务
 """
 
+import sys
+import os
+
+# 添加项目根目录和src目录到Python路径
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.join(project_root, 'src'))
+
 import requests
 import json
 import time
-import sys
 
 API_BASE_URL = "http://127.0.0.1:5000"
 
@@ -83,6 +90,61 @@ def test_generate_image():
         print(f"✗ 图片生成错误: {e}")
         return False
 
+def test_hq_generation():
+    """测试高质量图片生成"""
+    print("\n=== 测试高质量图片生成 ===")
+    
+    test_data = {
+        "prompt": "a majestic dragon flying over a medieval castle, fantasy art, detailed, masterpiece",
+        "width": 1024,
+        "height": 1024,
+        "steps": 20,
+        "guidance_scale": 3.5
+    }
+    
+    print(f"高质量参数: {json.dumps(test_data, indent=2, ensure_ascii=False)}")
+    
+    try:
+        print("正在生成高质量图片...")
+        start_time = time.time()
+        
+        response = requests.post(
+            f"{API_BASE_URL}/generate",
+            json=test_data,
+            timeout=180  # 3分钟超时
+        )
+        
+        generation_time = time.time() - start_time
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✓ 高质量图片生成成功")
+            print(f"  任务ID: {data.get('task_id')}")
+            print(f"  生成时间: {generation_time:.2f}秒")
+            print(f"  图片URL: {API_BASE_URL}{data.get('image_url')}")
+            
+            # 比较生成时间
+            if generation_time < 60:
+                print(f"  🚀 生成速度很快: {generation_time:.2f}秒")
+            elif generation_time < 120:
+                print(f"  ⏱️ 生成速度正常: {generation_time:.2f}秒")
+            else:
+                print(f"  🐌 生成速度较慢: {generation_time:.2f}秒")
+            
+            return True
+        else:
+            print(f"✗ 高质量图片生成失败: {response.status_code}")
+            try:
+                error_data = response.json()
+                print(f"  错误信息: {error_data.get('error', 'Unknown error')}")
+            except:
+                print(f"  错误信息: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"✗ 高质量图片生成异常: {e}")
+        return False
+
 def test_get_image(image_url):
     """测试获取图片接口"""
     print("\n=== 测试图片获取接口 ===")
@@ -154,7 +216,8 @@ def main():
         ("状态接口", test_status),
         ("模型列表接口", test_models),
         ("队列状态接口", test_queue),
-        ("图片生成接口", test_generate_image)
+        ("标准图片生成", test_generate_image),
+        ("高质量图片生成", test_hq_generation)
     ]
     
     results = []
@@ -183,6 +246,7 @@ def main():
     
     if passed == len(results):
         print("\n🎉 所有测试通过！API服务运行正常")
+        print("现在可以生成与Web界面相同质量的高清图片了！")
         return 0
     else:
         print(f"\n⚠ {len(results) - passed} 个测试失败，请检查服务状态")
