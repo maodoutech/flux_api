@@ -140,6 +140,12 @@ def main():
             "width": 512,
             "height": 512,
             "steps": 15
+        },
+        {
+            "prompt": "One girl, long hair, model, white background, white shirt, khaki Capri pants, khaki loafers, sitting on a stool, lazy pose, slightly tilting head, smiling, Asian beauty, loose-fitting clothes, hands placed in front of body, slightly raised foot, half-body shot, Canon R5 camera style, blurred background, indoor, natural light, some sunlight shining on the face，9:16.",
+            "width": 1024,
+            "height": 1024,
+            "steps": 20
         }
     ]
     
