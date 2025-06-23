@@ -288,10 +288,10 @@ class ComfyUIManager:
         
         # 限制提示词长度，避免Token长度超出限制
         # CLIP模型的最大Token长度通常是77，对应大约200-300个字符
-        max_prompt_length = 200
-        if len(prompt) > max_prompt_length:
-            logger.warning(f"提示词过长（{len(prompt)}字符），将截断到{max_prompt_length}字符")
-            prompt = prompt[:max_prompt_length]
+        max_prompt_length = 300
+        # if len(prompt) > max_prompt_length:
+        #     logger.warning(f"提示词过长（{len(prompt)}字符），将截断到{max_prompt_length}字符")
+        #     prompt = prompt[:max_prompt_length]
         
         # 更新参数 - 使用CLIPTextEncodeFlux节点格式
         workflow["6"]["inputs"]["clip_l"] = prompt  # CLIP-L编码器的提示词
@@ -430,9 +430,17 @@ class ComfyUIManager:
                         
                         image_response = requests.get(image_url, params=params, timeout=30)
                         if image_response.status_code == 200:
-                            # 保存图片
-                            output_path = os.path.join("output", f"{task_id}.png")
-                            os.makedirs("output", exist_ok=True)
+                            # 保存图片 - 使用绝对路径确保路径正确
+                            # 获取项目根目录（src的上级目录）
+                            current_dir = os.path.dirname(os.path.abspath(__file__))  # src目录
+                            project_root = os.path.dirname(current_dir)  # 项目根目录
+                            output_dir = os.path.join(project_root, "output")
+                            output_path = os.path.join(output_dir, f"{task_id}.png")
+                            
+                            # 确保输出目录存在
+                            os.makedirs(output_dir, exist_ok=True)
+                            
+                            logger.info(f"保存图片到: {output_path}")
                             
                             with open(output_path, 'wb') as f:
                                 f.write(image_response.content)

@@ -95,7 +95,7 @@ def test_hq_generation():
     print("\n=== 测试高质量图片生成 ===")
     
     test_data = {
-        "prompt": "a majestic dragon flying over a medieval castle, fantasy art, detailed, masterpiece",
+        "prompt": "A flat illustration in a bright, cheerful color palette depicting a person looking exasperated, with a single, large speech bubble above their head containing a single, slightly tilted, unimpressed-looking eye.  The background should be a simple, solid color. The style should be minimalist and easily understandable, conveying the sense of  someone reacting to a silly or inattentive remark with a non-verbal \"hello?\".  The overall feeling should be light-hearted and slightly sarcastic, avoiding any harsh or negative emotions.  Focus on the expression of the eye in the speech bubble to convey the meaning.",
         "width": 1024,
         "height": 1024,
         "steps": 20,

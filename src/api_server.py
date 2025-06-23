@@ -159,11 +159,19 @@ def generate_image():
 def get_image(task_id):
     """获取生成的图片"""
     try:
-        image_path = os.path.join('output', f'{task_id}.png')
+        # 使用绝对路径确保路径正确
+        # 获取项目根目录（src的上级目录）
+        current_dir = os.path.dirname(os.path.abspath(__file__))  # src目录
+        project_root = os.path.dirname(current_dir)  # 项目根目录
+        image_path = os.path.join(project_root, 'output', f'{task_id}.png')
+        
+        logger.info(f"查找图片文件: {image_path}")
         
         if not os.path.exists(image_path):
-            return jsonify({'error': '图片不存在'}), 404
+            logger.error(f"图片文件不存在: {image_path}")
+            return jsonify({'error': f'图片不存在: {task_id}'}), 404
         
+        logger.info(f"成功找到图片文件: {image_path}")
         return send_file(image_path, mimetype='image/png')
         
     except Exception as e:
